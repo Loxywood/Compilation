@@ -26,7 +26,7 @@ unsigned int identificateur(char * str){
         }
     }
 
-    //En fonction de 'état on retourne une valeur :
+    //En fonction de l'état on retourne une valeur :
     if (state == 1){
         return 1;
     }
@@ -44,6 +44,8 @@ unsigned int nbr_entier(char * str){
             case 0:
                 if((str[i]>=48) && (str[i]<=57)){
                     state = 1;
+                }else{
+                    state=2;
                 }
                 break;
             case 1:
@@ -64,3 +66,90 @@ unsigned int nbr_entier(char * str){
     return 0;
 }
 
+unsigned int affectation(char * str){
+
+    unsigned int state = 0;
+
+    for(size_t i =0; i<strlen(str);i++){
+
+        switch(state){
+
+            case 0:
+                if(str[i]==61){
+                    state = 1;
+                }else{
+                    state=2;
+                }
+                break;
+            case 1:
+                if(str[i]){
+                    state=2;
+                }
+            case 2:
+                state = 2;
+                break;
+        }
+    }
+    if(state == 1){
+        return 1;
+    }
+    return 0;
+}
+
+unsigned int separateur(char * str){
+    unsigned int state = 0;
+
+    for(size_t i =0; i<strlen(str);i++){
+
+        switch(state){
+
+            case 0:
+                if(str[i]==59 || str[i]==40 || str[i]==41){
+                    state = 1;
+                }else{
+                    state=2;
+                }
+                break;
+            case 1:
+                if(str[i]){
+                    state=2;
+                }
+            case 2:
+                state = 2;
+                break;
+        }
+    }
+    if(state == 1){
+        return 1;
+    }
+    return 0;
+}
+
+unsigned int operateur(char * str){
+    unsigned int state = 0;
+
+    for(size_t i =0; i<strlen(str);i++){
+
+        switch(state){
+
+            case 0:
+                if(str[i]==42 || str[i]==43 || str[i]==45 || str[i]==47){
+                    state = 1;
+                }else{
+                    state=2;
+                }
+                break;
+            case 1:
+                if(str[i]){
+                    state=2;
+                }
+            case 2:
+                state = 2;
+                break;
+        }
+    }
+    if(state == 1){
+        return 1;
+    }
+    return 0;
+}
