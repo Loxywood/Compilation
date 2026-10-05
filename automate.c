@@ -153,3 +153,33 @@ unsigned int operateur(char * str){
     }
     return 0;
 }
+
+unsigned int analyseur_lexical(char* str){
+    char tab[strlen(str)];
+    strcpy(tab, str);
+
+    const char *delim = " ";
+
+    char *token = strtok(tab, delim);
+
+    while (token != NULL){
+
+        if (identificateur(token)){
+            printf("Identificateur : %s\n",token);
+        }else if (nbr_entier(token)){
+            printf("Nombre entier: %s\n",token);
+        } else if (affectation(token)){
+            printf("Affectation : %s\n",token);
+        } else if (operateur(token)){
+            printf("Opérateur : : %s\n",token);
+        } else if (separateur(token)){
+            printf("Séparateur : %s\n",token);
+        } else {
+            printf("Erreur lors de l'analyse lexicale : %s.",token);
+            return EXIT_FAILURE;
+        }
+        
+        token = strtok(NULL,delim);
+    }
+    return 1;
+}

@@ -8,5 +8,8 @@ int main (){
     printf("Résultat : %u\n",separateur(";"));
     printf("Résultat : %u\n",operateur("*"));
 
+    printf("Affichage des tokens : \n");
+    analyseur_lexical("var1 = 1,8 + 27");
+
     return EXIT_SUCCESS;
 }
