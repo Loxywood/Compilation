@@ -1,9 +1,7 @@
 #include "automate.h"
 
 unsigned int identificateur(char * str){
-
     unsigned int state = 0;                             //On définit un état.
-
     for(size_t i=0; i<strlen(str); i++){                   //Pour chaque caractère de la chaîne :
         switch (state){                                  
             case 0:
@@ -26,7 +24,7 @@ unsigned int identificateur(char * str){
         }
     }
 
-    //En fonction de l'état on retourne une valeur :
+    //En fonction de l'état terminal ou non, on retourne une valeur :
     if (state == 1){
         return 1;
     }
@@ -34,13 +32,9 @@ unsigned int identificateur(char * str){
 }
 
 unsigned int nbr_entier(char * str){
-
     unsigned int state = 0;
-
     for(size_t i =0; i<strlen(str);i++){
-
         switch(state){
-
             case 0:
                 if((str[i]>=48) && (str[i]<=57)){
                     state = 1;
@@ -54,7 +48,7 @@ unsigned int nbr_entier(char * str){
                 } else {
                     state = 2;
                 }
-                    break;
+                break;
             case 2:
                 state = 2;
                 break;
@@ -67,13 +61,9 @@ unsigned int nbr_entier(char * str){
 }
 
 unsigned int affectation(char * str){
-
     unsigned int state = 0;
-
     for(size_t i =0; i<strlen(str);i++){
-
         switch(state){
-
             case 0:
                 if(str[i]==61){
                     state = 1;
@@ -98,11 +88,8 @@ unsigned int affectation(char * str){
 
 unsigned int separateur(char * str){
     unsigned int state = 0;
-
     for(size_t i =0; i<strlen(str);i++){
-
         switch(state){
-
             case 0:
                 if(str[i]==59 || str[i]==40 || str[i]==41){
                     state = 1;
@@ -127,11 +114,8 @@ unsigned int separateur(char * str){
 
 unsigned int operateur(char * str){
     unsigned int state = 0;
-
     for(size_t i =0; i<strlen(str);i++){
-
         switch(state){
-
             case 0:
                 if(str[i]==42 || str[i]==43 || str[i]==45 || str[i]==47){
                     state = 1;
@@ -157,28 +141,24 @@ unsigned int operateur(char * str){
 unsigned int analyseur_lexical(char* str){
     char tab[strlen(str)];
     strcpy(tab, str);
-
     const char *delim = " ";
-
     char *token = strtok(tab, delim);
-
     while (token != NULL){
 
         if (identificateur(token)){
-            printf("Identificateur : %s\n",token);
+            printf("Identificateur: %s\n",token);
         }else if (nbr_entier(token)){
             printf("Nombre entier: %s\n",token);
         } else if (affectation(token)){
-            printf("Affectation : %s\n",token);
+            printf("Affectation: %s\n",token);
         } else if (operateur(token)){
-            printf("Opérateur : : %s\n",token);
+            printf("Opérateur: %s\n",token);
         } else if (separateur(token)){
-            printf("Séparateur : %s\n",token);
+            printf("Séparateur: %s\n",token);
         } else {
-            printf("Erreur lors de l'analyse lexicale : %s.",token);
+            printf("Erreur lors de l'analyse lexicale : %s\n",token);
             return EXIT_FAILURE;
         }
-        
         token = strtok(NULL,delim);
     }
     return 1;
