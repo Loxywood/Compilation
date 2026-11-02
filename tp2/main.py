@@ -1,6 +1,6 @@
 import analyseur_syntaxique
 
-chaine = "main() { id = nombre }"     #Chaîne de caractère à analyser
+chaine = "main() { id = nombre } $"     #Chaîne de caractère à analyser
 
 VN = ["<programme>",                  #Ensemble des non-terminaux
 "<liste_instruction>",
@@ -17,8 +17,6 @@ VT = ["X","<",">","=","id","main()","nombre","if","else","int","float","{","}","
 
 #On crée un objet analyseur syntaxique qui prend comme paramètre, une pile, une table d'analyse ainsi qu'une chaîne à analyser
 analyseur_syntaxique = analyseur_syntaxique.AnalyseurSyntaxique()
-
-print(chaine.split(" "))
 
 dico_regles = {
     1:"main() { <liste_declarations> <liste_instructions> }",
@@ -49,19 +47,23 @@ VT,
 ["<type>",0,0,0,0,0,0,0,0,9,10,0,0,0,0],
 ["<affectation>",0,0,0,11,0,0,0,0,0,0,0,0,0,0],
 ["<test>",0,0,0,0,0,0,12,0,0,0,0,0,0,0],
-["<condition>",0,0,0,13,0,0,0,0,0,0,0,0,0,0],
+["<condition>",0,0,0,13,0,0,0,0,0,0,0,0,0,0,0],
 ["<operateur>",14,15,16,0,0,0,0,0,0,0,0,0,0,0]
 ]
-
+analyseur_syntaxique.pile.empiler("$")
 analyseur_syntaxique.pile.empiler("<programme>")
+
 analyseur_syntaxique.chaine_terminale = chaine.split(" ")
 analyseur_syntaxique.table_analyse = talbe_analyse_test
 
 def analyse():
+
     erreur = False
     accepte = False
-    while (not erreur) or (not accepte):
-        x = analyseur_syntaxique.pile.voir_premier()
+
+    for _ in range(1) :
+        print("test")
+        x = analyseur_syntaxique.pile.voir_dernier()
         for elt in analyseur_syntaxique.chaine_terminale:
 
             #On s'occupe de voir si X et elt appartiennent bien à leurs ensemble respectifs
@@ -70,7 +72,25 @@ def analyse():
                 ligne = VN.index(x)
                 colonne = VT.index(elt)
 
-                regle = talbe_analyse_test[ligne +1 ][colonne]
-                print(regle)
+                #On retrouve la règle dans la TA.
+                regle = (dico_regles.get(talbe_analyse_test[ligne +1 ][colonne])).split(" ")
+                print(f"La règle correspondant est : {regle}")
+
+                if regle is not None :
+                    analyseur_syntaxique.pile.depiler()
+                    for i in range(len(regle),0,-1) :
+                        print(regle[i-1])
+                        analyseur_syntaxique.pile.empiler(regle[i-1])
+
+            else :
+                if x == "$" :
+                    if elt == "$" :
+                        accepte = True
+                    else : 
+                        erreur = True
+                elif (x in VT) :
+                    analyseur_syntaxique.pile.depiler()
+                else :
+                    erreur = True
 
 analyse()

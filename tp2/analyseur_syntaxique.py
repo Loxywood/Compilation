@@ -15,8 +15,11 @@ class Pile :
 
     def depiler(self):
         self.p.pop()
-    def voir_premier(self):
+    def voir_dernier(self):
         return self.p[-1]
+
+    def afficher_pile(self):
+        print(self)
 
 #Les classes Arbre et Noeud nous srerviront pour produire l'arbre de syntaxe
 class Arbre :
