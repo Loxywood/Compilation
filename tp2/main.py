@@ -3,9 +3,9 @@ import analyseur_syntaxique
 chaine = "main() { id = nombre } $"     #Chaîne de caractère à analyser
 
 VN = ["<programme>",                  #Ensemble des non-terminaux
-"<liste_instruction>",
+"<liste_instructions>",
 "<instruction>",
-"<liste_declaration>",
+"<liste_declarations>",
 "<declaration>",
 "<type>",
 "<affectation>",
@@ -13,7 +13,7 @@ VN = ["<programme>",                  #Ensemble des non-terminaux
 "<condition>",
 "<operateur>]"]
 
-VT = ["X","<",">","=","id","main()","nombre","if","else","int","float","{","}",";",""]
+VT = ["X","<",">","=","id","main()","nombre","if","else","int","float","{","}",";","","$"]
 
 #On crée un objet analyseur syntaxique qui prend comme paramètre, une pile, une table d'analyse ainsi qu'une chaîne à analyser
 analyseur_syntaxique = analyseur_syntaxique.AnalyseurSyntaxique()
@@ -38,7 +38,7 @@ dico_regles = {
 }
 #Le symbole vide ne se traduit pas nécésairrement par la chaîne vide, garder ça en tête en cas d'erreur
 talbe_analyse_test = [
-VT,
+["X","<",">","=","id","main()","nombre","if","else","int","float","{","}",";",""],
 ["<programme>",0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
 ["<liste_instruction>",0,0,0,5,0,0,5,0,0,0,0,6,0,0],
 ["<instruction>",0,0,0,7,0,0,8,0,0,0,0,0,0,0],
@@ -61,36 +61,45 @@ def analyse():
     erreur = False
     accepte = False
 
-    for _ in range(1) :
-        print("test")
-        x = analyseur_syntaxique.pile.voir_dernier()
+    while (not erreur) and (not accepte) :
+        #PASSER Dun elt à un for I in range()
         for elt in analyseur_syntaxique.chaine_terminale:
+            
+            x = analyseur_syntaxique.pile.voir_dernier()
+            print(f"Le sommet de la pile vaut : {x}")
 
             #On s'occupe de voir si X et elt appartiennent bien à leurs ensemble respectifs
             if (x in VN) and (elt in VT):
 
                 ligne = VN.index(x)
                 colonne = VT.index(elt)
+                print(f"Les numéros de ligne et de colonne sont : {ligne},{colonne}")
 
                 #On retrouve la règle dans la TA.
-                regle = (dico_regles.get(talbe_analyse_test[ligne +1 ][colonne])).split(" ")
-                print(f"La règle correspondant est : {regle}")
-
-                if regle is not None :
+                print(talbe_analyse_test[ligne +1 ][colonne])
+                regle = dico_regles.get(talbe_analyse_test[ligne +1 ][colonne])
+                print(regle)
+                if (regle is not None) :
+                    #print(f"La règle correspondant est : {regle}")
                     analyseur_syntaxique.pile.depiler()
-                    for i in range(len(regle),0,-1) :
-                        print(regle[i-1])
-                        analyseur_syntaxique.pile.empiler(regle[i-1])
-
+                    for i in range(len(regle.split(" ")),0,-1) :
+                        print(regle.split(" ")[i-1])
+                        analyseur_syntaxique.pile.empiler(regle.split(" ")[i-1])
+                else :
+                    print("Erreur : La règle vaut None.")
+                    erreur = True
+            #Si X est un terminal
             else :
                 if x == "$" :
                     if elt == "$" :
                         accepte = True
                     else : 
+                        print("La fin de la pile ne coincide pas avec la fin de la chaîne.")
                         erreur = True
                 elif (x in VT) :
                     analyseur_syntaxique.pile.depiler()
                 else :
+                    print("Erreur : La pile contient une truc bizarre.")
                     erreur = True
 
 analyse()
