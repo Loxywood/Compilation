@@ -1,6 +1,6 @@
 import analyseur_syntaxique
 
-chaine = "main() { id = nombre } $"     #Chaîne de caractère à analyser
+chaine = "main() { id = nombre ; } $"     #Chaîne de caractère à analyser
 
 VN = ["<programme>",                  #Ensemble des non-terminaux
 "<liste_instructions>",
@@ -37,7 +37,7 @@ dico_regles = {
     16:"="
 }
 #Le symbole vide ne se traduit pas nécésairrement par la chaîne vide, garder ça en tête en cas d'erreur
-talbe_analyse_test = [
+table_analyse_test = [
 ["X","<",">","=","id","main()","nombre","if","else","int","float","{","}",";",""],
 ["<programme>",0,0,0,0,1,0,0,0,0,0,0,0,0,0,0],
 ["<liste_instruction>",0,0,0,5,0,0,5,0,0,0,0,6,0,0],
@@ -54,52 +54,54 @@ analyseur_syntaxique.pile.empiler("$")
 analyseur_syntaxique.pile.empiler("<programme>")
 
 analyseur_syntaxique.chaine_terminale = chaine.split(" ")
-analyseur_syntaxique.table_analyse = talbe_analyse_test
+analyseur_syntaxique.table_analyse = table_analyse_test
 
-def analyse():
+def analyse(chaine):
 
     erreur = False
     accepte = False
 
     while (not erreur) and (not accepte) :
-        #PASSER Dun elt à un for I in range()
-        for elt in analyseur_syntaxique.chaine_terminale:
-            
-            x = analyseur_syntaxique.pile.voir_dernier()
-            print(f"Le sommet de la pile vaut : {x}")
 
-            #On s'occupe de voir si X et elt appartiennent bien à leurs ensemble respectifs
-            if (x in VN) and (elt in VT):
+        i = 0    
+        x = analyseur_syntaxique.pile.voir_dernier()
+        elt = analyseur_syntaxique.chaine_terminale[i]
 
-                ligne = VN.index(x)
-                colonne = VT.index(elt)
-                print(f"Les numéros de ligne et de colonne sont : {ligne},{colonne}")
+        print(f"X : {x}, elt : {elt}")
 
-                #On retrouve la règle dans la TA.
-                print(talbe_analyse_test[ligne +1 ][colonne])
-                regle = dico_regles.get(talbe_analyse_test[ligne +1 ][colonne])
-                print(regle)
-                if (regle is not None) :
-                    #print(f"La règle correspondant est : {regle}")
-                    analyseur_syntaxique.pile.depiler()
-                    for i in range(len(regle.split(" ")),0,-1) :
-                        print(regle.split(" ")[i-1])
-                        analyseur_syntaxique.pile.empiler(regle.split(" ")[i-1])
-                else :
-                    print("Erreur : La règle vaut None.")
-                    erreur = True
-            #Si X est un terminal
+        #On s'occupe de voir si X et elt appartiennent bien à leurs ensemble respectifs
+        if (x in VN):
+
+            ligne = VN.index(x)
+            colonne = VT.index(elt)
+            print(f"Les numéros de ligne et de colonne sont : {ligne},{colonne}")
+
+            #On retrouve la règle dans la TA.
+            print(table_analyse_test[ligne +1 ][colonne])
+            regle = dico_regles.get(table_analyse_test[ligne +1 ][colonne])
+            print(regle)
+            if (regle is not None) :
+                #print(f"La règle correspondant est : {regle}")
+                analyseur_syntaxique.pile.depiler()
+                for i in range(len(regle.split(" ")),0,-1) :
+                    analyseur_syntaxique.pile.empiler(regle.split(" ")[i-1])
+                    print(regle.split(" ")[i-1])
             else :
-                if x == "$" :
-                    if elt == "$" :
-                        accepte = True
-                    else : 
-                        print("La fin de la pile ne coincide pas avec la fin de la chaîne.")
-                        erreur = True
-                elif (x in VT) :
-                    analyseur_syntaxique.pile.depiler()
-                else :
-                    print("Erreur : La pile contient une truc bizarre.")
+                print("Erreur : La règle vaut None.")
+                erreur = True
+        #Si X est un terminal
+        else :
+            if x == "$" :
+                if elt == "$" :
+                    accepte = True
+                    print("La chaîne est acceptée par l'analyseur syntaxique.")
+                else : 
+                    print("La fin de la pile ne coincide pas avec la fin de la chaîne.")
                     erreur = True
+            elif (x in VT) :
+                analyseur_syntaxique.pile.depiler()
+            else :
+                print("Erreur : La pile contient une truc bizarre.")
+                erreur = True
 
 analyse()
