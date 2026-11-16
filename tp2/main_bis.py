@@ -34,6 +34,7 @@ dico_regles = {
     15:">",
     16:"="
 }
+
 #Le symbole vide ne se traduit pas nécésairrement par la chaîne vide, garder ça en tête en cas d'erreur
 table_analyse_test = [
 ["X","<",">","=","id","main()","nombre","if","else","int","float","{","}",";","","$"],
@@ -49,22 +50,29 @@ table_analyse_test = [
 ["<operateur>",14,15,16,0,0,0,0,0,0,0,0,0,0,0,0]
 ]
 
+#L'analyseur syntaxique en tant que tel.
+#Il pourrait être déplacé dans une classe mais pour l'instant nous choisissons de le laisser ici.
 def analyse(chaine):
 
+    #I est une variable qui nous permettra de parcourir la chaîne à analyser
     i = 0
 
+    #Cette boucle while True sera stoppée dans le cas  ou l'analyse réussie, autrement elle va lever des exception.
     while True :
 
+        #On considère x, le sommet de la pile et elt le symbolecourant.
         X = analyseur_syntaxique.pile.voir_dernier()
         elt = analyseur_syntaxique.chaine_terminale[i]
 
+        #On les affiche.
         print(f"X : {X}, elt : {elt}")
 
+        #Cas 1 : X est un non-terminal :
         if X in VN :
 
             ligne = VN.index(X)
             colonne = VT.index(elt)
-
+            #Cas 1.1 : Une règle existe dans la table d'analyse pour X et elt. On l'applique.
             if dico_regles.get(analyseur_syntaxique.table_analyse[ligne+1][colonne]) is not None :
                 regle = dico_regles.get(analyseur_syntaxique.table_analyse[ligne+1][colonne])
                 
@@ -73,25 +81,27 @@ def analyse(chaine):
                     if y != "" :
                         analyseur_syntaxique.pile.empiler(y)
                 print(f"Règle appliquée : {regle}")
-
+            #Cas 1.2 : Aucune règle n'existe. On lève une exception.
             else : 
                 raise Exception("Erreur d'analyse syntaxique : Aucune règle correspondante trouvée.")
-                return False
+            
+        #Cas 2 : X est un terminal :
         else :
+            #Cas 2.1 : X vaut dollar. Si elt vaut aussi dollar, l'analyse est réussie.
             if X == "$" :
                 if elt == "$" :
                     print("Analyse syntaxique réussie !")
                     return True
                 else :
                     raise Exception("Erreur d'analyse syntaxique : Symbole terminal inattendu.")
-                    return False
+            #Cas 2.2 : X != de dollar. On vérifie que elt == X. Si c'est le cas on dépile et on continue.
             elif X in VT : 
                 if X == elt :
                     analyseur_syntaxique.pile.depiler()
                     i += 1
                 else :
                     raise Exception("Erreur d'analyse syntaxique : Symbole terminal attendu mais non trouvé.")
-                    return False
+            #Cas 2.3 : X n'est ni dollar ni un terminal. On lève une exception.
             else :
                 raise Exception("Erreur d'analyse syntaxique : Symbole inconnu.")
 
