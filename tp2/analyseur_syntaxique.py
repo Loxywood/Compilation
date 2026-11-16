@@ -88,12 +88,13 @@ class  AnalyseurSyntaxique :
             15:">",
             16:"="
         }
-        self.arbre_syntaxique = Arbre()
+        self.arbre_syntaxique = Arbre(Noeud("<programme>"))
 
-    def analyse(self, chaine_terminale):
+    def analyse(self):
 
         #I est une variable qui nous permettra de parcourir la chaîne à analyser
         i = 0
+        noeud_courant = self.arbre_syntaxique.racine
 
         #Cette boucle while True sera stoppée dans le cas  ou l'analyse réussie, autrement elle va lever des exception.
         while True :
@@ -101,12 +102,18 @@ class  AnalyseurSyntaxique :
             #On considère x, le sommet de la pile et elt le symbolecourant.
             X = self.pile.voir_dernier()
             elt = self.chaine_terminale[i]
+            if noeud_courant.enfants:
+                noeud_courant = noeud_courant.enfants[-1]
+            else :
+                noeud_courant = noeud_courant
+            
 
             #On les affiche.
             print(f"X : {X}, elt : {elt}")
 
             #Cas 1 : X est un non-terminal :
             if X in VN :
+
 
                 ligne = VN.index(X)
                 colonne = VT.index(elt)
@@ -118,6 +125,7 @@ class  AnalyseurSyntaxique :
                     for y in reversed(regle.split()) :
                         if y != "" :
                             self.pile.empiler(y)
+                            noeud_courant.ajouter_enfant(y)
                     print(f"Règle appliquée : {regle}")
                 #Cas 1.2 : Aucune règle n'existe. On lève une exception.
                 else : 
